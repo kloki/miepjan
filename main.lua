@@ -77,7 +77,9 @@ function love.keypressed(key)
       if mode==0 then
 	 mode=1
       else
-	 cgame:reset()
+	 if key=="m"or key=="n"or key=="z" then
+	    cgame:buttonpress(key)
+	 end
       end
    end
 

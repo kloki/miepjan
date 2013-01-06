@@ -50,4 +50,5 @@ end
 function pause.On(update)
    pause.text=update
    mode=0
+   cgame:reset()
 end

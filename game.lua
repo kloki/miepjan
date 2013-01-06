@@ -30,13 +30,16 @@ end
 function game:reset()
    self.start=true
    self.starting=true
-   self.counter=0
+   self.counter=1
    self.index=math.random(1,5)
    self.step=0
    self.stepsize=0.5
    self.direction=math.random(0,1)
-   self.answer="Start!"
-   self.names={"Tally","Smally","Gothicy","Stripey","Player"}
+   self.answer="1"
+   self.names={"Tally","Shortey","Gothicy","Stripey","Player"}
+   self.userSpeak=false
+   self.userMiep=false
+   self.userJan=false
 end
 
 function game:update(dt)
@@ -52,9 +55,21 @@ function game:update(dt)
 	 self.step=self.step-self.stepsize
 	 self.counter=self.counter+1
 	 
+	 --if players turn check answer
+	 if self.index==5 then
+	    if self:playerFalse() then
+	       TEsound.play("sounds/error.wav")
+	       pause.On("You messed up. \n\n Your Score: "..self.counter.."\n\n Press the any key to try again.")
+
+	    end
+	    self.userSpeak=false
+	    self.userMiep=false
+	    self.userJan=false
+	 end
 	 self:updateIndex()
 	 self:determineCorrect()
-	 
+
+
 	 if self.answer=="Miep" or self.answer=="Miep ,Jan" then
 	    if self.direction==0 then
 	       self.direction=1
@@ -86,9 +101,19 @@ function game:draw()
 	 love.graphics.print(self.answer,794,87)
       elseif self.index==4 then
 	 love.graphics.print(self.answer,981,163)
-      elseif self.index==5 then
+      end
+      --display player input
+      if love.keyboard.isDown("z") then
 	 love.graphics.setFont(fBig)
-	 love.graphics.print(self.answer,500,280)
+	 love.graphics.print(self.counter,500,280)
+	 love.graphics.setFont(fSmall)
+      elseif love.keyboard.isDown("n") then
+	 love.graphics.setFont(fBig)
+	 love.graphics.print("Jan",500,280)
+	 love.graphics.setFont(fSmall)
+      elseif love.keyboard.isDown("m") then
+	 love.graphics.setFont(fBig)
+	 love.graphics.print("Miep",500,280)
 	 love.graphics.setFont(fSmall)
       end
    end
@@ -120,6 +145,51 @@ function game:determineCorrect()
    else
       self.answer=self.counter
    end
+end
+
+function game:buttonpress(key)
+   if self.index~=5 then
+      TEsound.play("sounds/error.wav")
+      pause.On("You spoke when you shouldn't have. \n\n Your Score: "..self.counter.."\n\n Press the any key to try again.")
+   else 
+      if key=="z" then
+	 if self.userSpeak then
+	    TEsound.play("sounds/error.wav")
+	    pause.On("No spamming!!! \n\n Your Score: "..self.counter.."\n\n Press the any key to try again.")
+	 else
+	    self.userSpeak=true
+	 end
+      elseif key=="n" then
+	 if self.userJan then
+	    TEsound.play("sounds/error.wav")
+	    pause.On("No spamming!!! \n\n Your Score: "..self.counter.."\n\n Press the any key to try again.")
+	 else
+	    self.userJan=true
+	 end
+      elseif key=="m" then
+	 if self.userMiep then
+	    TEsound.play("sounds/error.wav")
+	    pause.On("No spamming!!! \n\n Your Score: "..self.counter.."\n\n Press the any key to try again.")
+	 else
+	    self.userMiep=true
+	 end
+      end
+   end
+
+end
+
+function game:playerFalse()
+   local incorrect=true
+   if self.answer=="Miep"then
+      if self.userSpeak==false and self.userJan==false and self.userMiep then incorrect=false end
+   elseif self.answer=="Jan"then
+	 if self.userSpeak==false and self.userJan and self.userMiep==false then incorrect=false end
+   elseif self.answer=="Miep, Jan"then
+      if self.userSpeak==false and self.userJan and self.userMiep then incorrect=false end
+   else
+      if self.userSpeak and self.userJan==false and self.useMiep==false then incorrect=false end
+   end
+   return incorrect
 end
 
 function instring(stringer,match)
