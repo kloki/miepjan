@@ -33,8 +33,10 @@ function game:reset()
    self.counter=1
    self.index=math.random(1,5)
    self.step=0
-   self.stepsize=0.5
+   self.stepsize=1
    self.direction=math.random(0,1)
+   self.thinktime=0.5
+   self.think=false
    self.answer="1"
    self.names={"Tally","Shortey","Gothicy","Stripey","Player"}
    self.userSpeak=false
@@ -48,12 +50,15 @@ function game:update(dt)
       if self.step>3 then
 	 self.start=false
 	 self.step=0
-	 TEsound.play("sounds/beep.wav")
       end
    else
+      if self.step>self.thinktime and self.think==false then
+	 self.think=true
+	 if self.index~=5 then TEsound.play("sounds/beep.wav")end
+      end
       if self.step>self.stepsize then
 	 self.step=self.step-self.stepsize
-	 self.counter=self.counter+1
+	 self.think=false
 	 
 	 --if players turn check answer
 	 if self.index==5 then
@@ -66,6 +71,7 @@ function game:update(dt)
 	    self.userMiep=false
 	    self.userJan=false
 	 end
+	 self.counter=self.counter+1
 	 self:updateIndex()
 	 self:determineCorrect()
 
@@ -77,7 +83,7 @@ function game:update(dt)
 	       self.direction=0
 	    end
 	 end
-	 TEsound.play("sounds/beep.wav")
+	 
       end
    end
 end
@@ -92,15 +98,16 @@ function game:draw()
       end
       love.graphics.setColor(255,255,255)
    else
-      love.graphics.print(self.counter,40,40)
-      if self.index==1 then
-	 love.graphics.print(self.answer,292,85)
-      elseif self.index==2 then
-	 love.graphics.print(self.answer,500,206)
-      elseif self.index==3 then
-	 love.graphics.print(self.answer,794,87)
-      elseif self.index==4 then
-	 love.graphics.print(self.answer,981,163)
+      if self.think then
+	 if self.index==1 then
+	    love.graphics.print(self.answer,292,85)
+	 elseif self.index==2 then
+	    love.graphics.print(self.answer,500,206)
+	 elseif self.index==3 then
+	    love.graphics.print(self.answer,794,87)
+	 elseif self.index==4 then
+	    love.graphics.print(self.answer,981,163)
+	 end
       end
       --display player input
       if love.keyboard.isDown("z") then
@@ -183,11 +190,11 @@ function game:playerFalse()
    if self.answer=="Miep"then
       if self.userSpeak==false and self.userJan==false and self.userMiep then incorrect=false end
    elseif self.answer=="Jan"then
-	 if self.userSpeak==false and self.userJan and self.userMiep==false then incorrect=false end
+      if self.userSpeak==false and self.userJan and self.userMiep==false then incorrect=false end
    elseif self.answer=="Miep, Jan"then
       if self.userSpeak==false and self.userJan and self.userMiep then incorrect=false end
    else
-      if self.userSpeak and self.userJan==false and self.useMiep==false then incorrect=false end
+      if self.userSpeak and self.userJan==false and self.userMiep==false then incorrect=false end
    end
    return incorrect
 end

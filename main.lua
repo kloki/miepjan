@@ -16,6 +16,7 @@
 require "pause"
 require "game"
 require "TEsound"
+require "highscore"
 
 function love.load()
    math.randomseed( os.time() )
@@ -24,6 +25,7 @@ function love.load()
    debug=false
    mode=0
    background=love.graphics.newImage("images/background.jpg")
+   fTiny=love.graphics.newFont("font/ChronoTrigger.ttf",20)
    fSmall=love.graphics.newFont("font/ChronoTrigger.ttf",40)
    fBig=love.graphics.newFont("font/ChronoTrigger.ttf",150)
    love.graphics.setFont(fSmall)
@@ -33,25 +35,8 @@ end
 
 function love.draw()
    love.graphics.draw(background,0,0)
-   
-   --button
-   if love.keyboard.isDown("z") then
-      love.graphics.setColor(255,0,0)
-   end
-   love.graphics.print("speak",270,550)
-   love.graphics.setColor(255,255,255)
-   if love.keyboard.isDown("n") then
-      love.graphics.setColor(255,0,0)
-   end
-   love.graphics.print("Jan !",600,550)
-   love.graphics.setColor(255,255,255)
-   if love.keyboard.isDown("m") then
-      love.graphics.setColor(255,0,0)
-   end
-   love.graphics.print("Miep !",900,550)
-   love.graphics.setColor(255,255,255)
-
-   if mode==0 then
+   highscore.draw()
+ if mode==0 then
       pause.draw()
    else
       cgame:draw()
@@ -69,6 +54,7 @@ end
 
 
 function love.keypressed(key)
+   
    if key=='escape' then
       love.event.quit()
    elseif key=='f' then
@@ -78,6 +64,7 @@ function love.keypressed(key)
 	 mode=1
       else
 	 if key=="m"or key=="n"or key=="z" then
+	    TEsound.play("sounds/button.wav")
 	    cgame:buttonpress(key)
 	 end
       end

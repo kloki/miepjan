@@ -18,7 +18,7 @@
 pause={
    layer=love.graphics.newImage("images/pause.png"),
    titleColor={255,255,255},
-   text="press Z to speak the number, N to shout Jan and M to shout Miep.\n\n Press the any key to start.",
+   text="press Z to speak the number, N to shout Jan and M to shout Miep. Remember to speak after te beep.\n\n Press the any key to start.",
    switch=0,
    flicker=0.1,
 }
@@ -50,5 +50,6 @@ end
 function pause.On(update)
    pause.text=update
    mode=0
+   highscore.update(cgame.counter)
    cgame:reset()
 end
