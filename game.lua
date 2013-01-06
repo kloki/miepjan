@@ -14,6 +14,7 @@
 -- along with this program. If not, see <http://www.gnu.org/licenses/>.
 --
 -- Koen Klinkers k.klinkers@gmail.com
+require "TEsound"
 
 game={
 }
@@ -27,37 +28,70 @@ function game:new (o)
 end
 
 function game:reset()
+   self.start=true
    self.starting=true
    self.counter=0
-   self.index=math.random(0,4)
+   self.index=math.random(1,5)
    self.step=0
    self.stepsize=0.5
    self.direction=math.random(0,1)
-   self.answer="1"
+   self.answer="Start!"
+   self.names={"Tally","Smally","Gothicy","Stripey","Player"}
 end
 
 function game:update(dt)
    self.step=self.step+dt
-   if self.step>self.stepsize then
-      self.step=self.step-self.stepsize
-      self.counter=self.counter+1
-      
-      self:updateIndex()
-      self:determineCorrect()
-      
-      if self.answer=="Miep" or self.answer=="Miep ,Jan" then
-	 if self.direction==0 then
-	    self.direction=1
-	 else
-	    self.direction=0
+   if self.start then
+      if self.step>3 then
+	 self.start=false
+	 self.step=0
+	 TEsound.play("sounds/beep.wav")
+      end
+   else
+      if self.step>self.stepsize then
+	 self.step=self.step-self.stepsize
+	 self.counter=self.counter+1
+	 
+	 self:updateIndex()
+	 self:determineCorrect()
+	 
+	 if self.answer=="Miep" or self.answer=="Miep ,Jan" then
+	    if self.direction==0 then
+	       self.direction=1
+	    else
+	       self.direction=0
+	    end
 	 end
+	 TEsound.play("sounds/beep.wav")
       end
    end
 end
 
 function game:draw()
-   love.graphics.print(self.counter,40,40)
-   love.graphics.print(self.answer,40,60)
+   if self.start then
+      love.graphics.setColor(255,0,0)
+      if self.direction==0 then
+	 love.graphics.printf(self.names[self.index].. " starts! \n\n Clockwise",300,300,600,"center")
+      else
+	 love.graphics.printf(self.names[self.index] .. " starts! \n\n Counterclockwise",300,300,600,"center")
+      end
+      love.graphics.setColor(255,255,255)
+   else
+      love.graphics.print(self.counter,40,40)
+      if self.index==1 then
+	 love.graphics.print(self.answer,292,85)
+      elseif self.index==2 then
+	 love.graphics.print(self.answer,500,206)
+      elseif self.index==3 then
+	 love.graphics.print(self.answer,794,87)
+      elseif self.index==4 then
+	 love.graphics.print(self.answer,981,163)
+      elseif self.index==5 then
+	 love.graphics.setFont(fBig)
+	 love.graphics.print(self.answer,500,280)
+	 love.graphics.setFont(fSmall)
+      end
+   end
 end
 
 function game:updateIndex()
@@ -66,10 +100,10 @@ function game:updateIndex()
    else
       self.index=self.index-1
    end
-   if self.index==5 then
-      self.index=0
-   elseif self.index==-1 then
-      self.index=4
+   if self.index==6 then
+      self.index=1
+   elseif self.index==0 then
+      self.index=5
    end
       
 end

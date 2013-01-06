@@ -15,6 +15,8 @@
 -- Koen Klinkers k.klinkers@gmail.com
 require "pause"
 require "game"
+require "TEsound"
+
 function love.load()
    math.randomseed( os.time() )
    screenheight=640
@@ -62,6 +64,7 @@ function love.update(dt)
    else
       cgame:update(dt)
    end
+   TEsound.cleanup()
 end
 
 
