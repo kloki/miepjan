@@ -13,7 +13,7 @@
 -- along with this program. If not, see <http://www.gnu.org/licenses/>.-
 
 -- Koen Klinkers k.klinkers@gmail.com
-
+require "pause"
 
 function love.load()
    math.randomseed( os.time() )
@@ -28,10 +28,15 @@ end
 
 function love.draw()
    love.graphics.draw(background,0,0)
+   if mode==0 then
+      pause.draw()
+   end
 end
 
 function love.update(dt)
-
+   if mode==0 then
+      pause.update(dt)
+   end
 end
 
 
